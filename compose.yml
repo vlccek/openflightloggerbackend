@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: drogon_postgres_db
+    environment:
+      POSTGRES_DB: mydatabase     # Must match "dbname" in config.json
+      POSTGRES_USER: myuser       # Must match "user" in config.json
+      POSTGRES_PASSWORD: mypassword # Must match "passwd" in config.json
+    ports:
+      - "5432:5432" # Exposes port 5432 on your host, useful for local access (e.g., with a GUI tool)
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persistent data volume
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  pgdata:

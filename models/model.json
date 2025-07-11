@@ -1,0 +1,25 @@
+{
+  "outputPath": "models",
+  "clientName": "default",
+  "rdbms": "postgresql",
+  "host": "127.0.0.1",
+  "port": 5432,
+  "user": "myuser",
+  "password": "mypassword",
+  "dbname": "mydatabase",
+  "schema": "public",
+  "tables": [
+  ],
+  "restful_api_controllers": {
+    "enabled": true,
+    "resource_uri": "/*",
+    "class_name": "AirportsController",
+    "filters": [],
+    "db_client": {
+      "name": "default",
+      "is_fast": false
+    },
+    "directory": "controllers",
+    "generate_base_only": true
+  }
+}
