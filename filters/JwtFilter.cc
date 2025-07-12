@@ -22,7 +22,7 @@ void JwtFilter::doFilter(const HttpRequestPtr &request, FilterCallback &&fcb, Fi
     }
 
     // Remove the string "Bearer " on token and decode it
-    std::map<std::string, any> jwtAttributes = JWT::decodeToken(token.substr(7));
+    std::map<std::string, std::any> jwtAttributes = JWT::decodeToken(token.substr(7));
     if (jwtAttributes.empty()) {
         Json::Value resultJson;
         resultJson["error"] = "Token is invalid!";

@@ -3,18 +3,31 @@
 #include <drogon/drogon.h>
 #include <drogon/HttpController.h>
 #include <utils/jwt/JWT.h>
+#include "argon2.h"
+#include <drogon/orm/Mapper.h>
+#include <drogon/orm/Criteria.h>
+#include <drogon/HttpAppFramework.h>
+#include "Airlines.h"
+#include "Users.h"
+#include "utils/crypto.h"
+
 
 using namespace drogon;
 using namespace api::utils::jwt;
-namespace api::v1 {
-    class Auth : public HttpController<Auth> {
+
+namespace api::v1
+{
+    class Auth : public HttpController<Auth>
+    {
     public:
         METHOD_LIST_BEGIN
             METHOD_ADD(Auth::getToken, "/login", Post, Options);
-        METHOD_ADD(Auth::verifyToken, "/verify", Get, Options, "api::v1::filters::JwtFilter");
+            METHOD_ADD(Auth::verifyToken, "/verify", Get, Options, "api::v1::filters::JwtFilter");
+            METHOD_ADD(Auth::registerUser, "/register", Post, Options);
         METHOD_LIST_END
 
-        void getToken(const HttpRequestPtr &request, std::function<void(const HttpResponsePtr &)> &&callback);
-        void verifyToken(const HttpRequestPtr &request, std::function<void(const HttpResponsePtr &)> &&callback);
+        void getToken(const HttpRequestPtr& request, std::function<void(const HttpResponsePtr&)>&& callback);
+        void verifyToken(const HttpRequestPtr& request, std::function<void(const HttpResponsePtr&)>&& callback);
+        void registerUser(const HttpRequestPtr& request, std::function<void(const HttpResponsePtr&)>&& callback);
     };
 }

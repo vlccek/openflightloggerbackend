@@ -10,13 +10,13 @@
 #include <drogon/HttpController.h>
 #include <drogon/orm/RestfulController.h>
 
-#include "Airports.h"
+#include "Users.h"
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::mydatabase;
 /**
  * @brief this class is created by the drogon_ctl command.
- * this class is a restful API controller for reading and writing the airports table.
+ * this class is a restful API controller for reading and writing the users table.
  */
 
 class AirportsControllerBase : public RestfulController
@@ -24,13 +24,13 @@ class AirportsControllerBase : public RestfulController
   public:
     void getOne(const HttpRequestPtr &req,
                 std::function<void(const HttpResponsePtr &)> &&callback,
-                Airports::PrimaryKeyType &&id);
+                Users::PrimaryKeyType &&id);
     void updateOne(const HttpRequestPtr &req,
                    std::function<void(const HttpResponsePtr &)> &&callback,
-                   Airports::PrimaryKeyType &&id);
+                   Users::PrimaryKeyType &&id);
     void deleteOne(const HttpRequestPtr &req,
                    std::function<void(const HttpResponsePtr &)> &&callback,
-                   Airports::PrimaryKeyType &&id);
+                   Users::PrimaryKeyType &&id);
     void get(const HttpRequestPtr &req,
              std::function<void(const HttpResponsePtr &)> &&callback);
     void create(const HttpRequestPtr &req,

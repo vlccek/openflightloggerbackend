@@ -3,8 +3,8 @@ project(flight_loger_backend CXX)
 
 include(CheckIncludeFileCXX)
 
-add_subdirectory(libs/drogon-assist)
 add_subdirectory(libs/jwt-cpp)
+add_subdirectory(libs/libsodium-cmake)
 
 check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
@@ -34,7 +34,8 @@ add_executable(${PROJECT_NAME} main.cc)
 find_package(Drogon CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
 target_link_libraries(${PROJECT_NAME} PRIVATE jwt-cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE drogon_assist)
+target_link_libraries(${PROJECT_NAME} PRIVATE sodium
+)
 
 
 # ##############################################################################

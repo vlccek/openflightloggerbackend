@@ -11,17 +11,17 @@
 
 void AirportsControllerBase::getOne(const HttpRequestPtr &req,
                                     std::function<void(const HttpResponsePtr &)> &&callback,
-                                    Airports::PrimaryKeyType &&id)
+                                    Users::PrimaryKeyType &&id)
 {
 
     auto dbClientPtr = getDbClient();
     auto callbackPtr =
         std::make_shared<std::function<void(const HttpResponsePtr &)>>(
             std::move(callback));
-    drogon::orm::Mapper<Airports> mapper(dbClientPtr);
+    drogon::orm::Mapper<Users> mapper(dbClientPtr);
     mapper.findByPrimaryKey(
         id,
-        [req, callbackPtr, this](Airports r) {
+        [req, callbackPtr, this](Users r) {
             (*callbackPtr)(HttpResponse::newHttpJsonResponse(makeJson(req, r)));
         },
         [callbackPtr](const DrogonDbException &e) {
@@ -45,7 +45,7 @@ void AirportsControllerBase::getOne(const HttpRequestPtr &req,
 
 void AirportsControllerBase::updateOne(const HttpRequestPtr &req,
                                        std::function<void(const HttpResponsePtr &)> &&callback,
-                                       Airports::PrimaryKeyType &&id)
+                                       Users::PrimaryKeyType &&id)
 {
     auto jsonPtr=req->jsonObject();
     if(!jsonPtr)
@@ -57,7 +57,7 @@ void AirportsControllerBase::updateOne(const HttpRequestPtr &req,
         callback(resp);
         return;
     }
-    Airports object;
+    Users object;
     std::string err;
     if(!doCustomValidations(*jsonPtr, err))
     {
@@ -72,7 +72,7 @@ void AirportsControllerBase::updateOne(const HttpRequestPtr &req,
     {
         if(isMasquerading())
         {
-            if(!Airports::validateMasqueradedJsonForUpdate(*jsonPtr, masqueradingVector(), err))
+            if(!Users::validateMasqueradedJsonForUpdate(*jsonPtr, masqueradingVector(), err))
             {
                 Json::Value ret;
                 ret["error"] = err;
@@ -85,7 +85,7 @@ void AirportsControllerBase::updateOne(const HttpRequestPtr &req,
         }
         else
         {
-            if(!Airports::validateJsonForUpdate(*jsonPtr, err))
+            if(!Users::validateJsonForUpdate(*jsonPtr, err))
             {
                 Json::Value ret;
                 ret["error"] = err;
@@ -121,7 +121,7 @@ void AirportsControllerBase::updateOne(const HttpRequestPtr &req,
     auto callbackPtr =
         std::make_shared<std::function<void(const HttpResponsePtr &)>>(
             std::move(callback));
-    drogon::orm::Mapper<Airports> mapper(dbClientPtr);
+    drogon::orm::Mapper<Users> mapper(dbClientPtr);
 
     mapper.update(
         object,
@@ -164,14 +164,14 @@ void AirportsControllerBase::updateOne(const HttpRequestPtr &req,
 
 void AirportsControllerBase::deleteOne(const HttpRequestPtr &req,
                                        std::function<void(const HttpResponsePtr &)> &&callback,
-                                       Airports::PrimaryKeyType &&id)
+                                       Users::PrimaryKeyType &&id)
 {
 
     auto dbClientPtr = getDbClient();
     auto callbackPtr =
         std::make_shared<std::function<void(const HttpResponsePtr &)>>(
             std::move(callback));
-    drogon::orm::Mapper<Airports> mapper(dbClientPtr);
+    drogon::orm::Mapper<Users> mapper(dbClientPtr);
     mapper.deleteByPrimaryKey(
         id,
         [callbackPtr](const size_t count) {
@@ -213,7 +213,7 @@ void AirportsControllerBase::get(const HttpRequestPtr &req,
                                  std::function<void(const HttpResponsePtr &)> &&callback)
 {
     auto dbClientPtr = getDbClient();
-    drogon::orm::Mapper<Airports> mapper(dbClientPtr);
+    drogon::orm::Mapper<Users> mapper(dbClientPtr);
     auto &parameters = req->parameters();
     auto iter = parameters.find("sort");
     if(iter != parameters.end())
@@ -278,7 +278,7 @@ void AirportsControllerBase::get(const HttpRequestPtr &req,
         try{
             auto criteria = makeCriteria((*jsonPtr)["filter"]);
             mapper.findBy(criteria,
-                [req, callbackPtr, this](const std::vector<Airports> &v) {
+                [req, callbackPtr, this](const std::vector<Users> &v) {
                     Json::Value ret;
                     ret.resize(0);
                     for (auto &obj : v)
@@ -309,7 +309,7 @@ void AirportsControllerBase::get(const HttpRequestPtr &req,
     }
     else
     {
-        mapper.findAll([req, callbackPtr, this](const std::vector<Airports> &v) {
+        mapper.findAll([req, callbackPtr, this](const std::vector<Users> &v) {
                 Json::Value ret;
                 ret.resize(0);
                 for (auto &obj : v)
@@ -354,7 +354,7 @@ void AirportsControllerBase::create(const HttpRequestPtr &req,
     }
     if(isMasquerading())
     {
-        if(!Airports::validateMasqueradedJsonForCreation(*jsonPtr, masqueradingVector(), err))
+        if(!Users::validateMasqueradedJsonForCreation(*jsonPtr, masqueradingVector(), err))
         {
             Json::Value ret;
             ret["error"] = err;
@@ -366,7 +366,7 @@ void AirportsControllerBase::create(const HttpRequestPtr &req,
     }
     else
     {
-        if(!Airports::validateJsonForCreation(*jsonPtr, err))
+        if(!Users::validateJsonForCreation(*jsonPtr, err))
         {
             Json::Value ret;
             ret["error"] = err;
@@ -378,18 +378,18 @@ void AirportsControllerBase::create(const HttpRequestPtr &req,
     }   
     try 
     {
-        Airports object = 
+        Users object = 
             (isMasquerading()? 
-             Airports(*jsonPtr, masqueradingVector()) : 
-             Airports(*jsonPtr));
+             Users(*jsonPtr, masqueradingVector()) : 
+             Users(*jsonPtr));
         auto dbClientPtr = getDbClient();
         auto callbackPtr =
             std::make_shared<std::function<void(const HttpResponsePtr &)>>(
                 std::move(callback));
-        drogon::orm::Mapper<Airports> mapper(dbClientPtr);
+        drogon::orm::Mapper<Users> mapper(dbClientPtr);
         mapper.insert(
             object,
-            [req, callbackPtr, this](Airports newObject){
+            [req, callbackPtr, this](Users newObject){
                 (*callbackPtr)(HttpResponse::newHttpJsonResponse(
                     makeJson(req, newObject)));
             },
@@ -424,24 +424,10 @@ void AirportsControllerBase::update(const HttpRequestPtr &req,
 AirportsControllerBase::AirportsControllerBase()
     : RestfulController({
           "id",
-          "ident",
-          "type",
-          "name",
-          "latitude_deg",
-          "longitude_deg",
-          "elevation_ft",
-          "continent",
-          "iso_country",
-          "iso_region",
-          "municipality",
-          "scheduled_service",
-          "icao_code",
-          "iata_code",
-          "gps_code",
-          "local_code",
-          "home_link",
-          "wikipedia_link",
-          "keywords"
+          "username",
+          "email",
+          "password",
+          "created_at"
       })
 {
    /**
@@ -451,23 +437,9 @@ AirportsControllerBase::AirportsControllerBase()
     */
     enableMasquerading({
         "id", // the alias for the id column.
-        "ident", // the alias for the ident column.
-        "type", // the alias for the type column.
-        "name", // the alias for the name column.
-        "latitude_deg", // the alias for the latitude_deg column.
-        "longitude_deg", // the alias for the longitude_deg column.
-        "elevation_ft", // the alias for the elevation_ft column.
-        "continent", // the alias for the continent column.
-        "iso_country", // the alias for the iso_country column.
-        "iso_region", // the alias for the iso_region column.
-        "municipality", // the alias for the municipality column.
-        "scheduled_service", // the alias for the scheduled_service column.
-        "icao_code", // the alias for the icao_code column.
-        "iata_code", // the alias for the iata_code column.
-        "gps_code", // the alias for the gps_code column.
-        "local_code", // the alias for the local_code column.
-        "home_link", // the alias for the home_link column.
-        "wikipedia_link", // the alias for the wikipedia_link column.
-        "keywords"  // the alias for the keywords column.
+        "username", // the alias for the username column.
+        "email", // the alias for the email column.
+        "password", // the alias for the password column.
+        "created_at"  // the alias for the created_at column.
     });
 }
