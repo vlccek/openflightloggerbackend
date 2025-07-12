@@ -13,8 +13,10 @@
   "restful_api_controllers": {
     "enabled": true,
     "resource_uri": "/*",
-    "class_name": "AirportsController",
-    "filters": [],
+    "class_name": "RestfulapiController",
+    "filters": [
+      "JwtFilter"
+    ],
     "db_client": {
       "name": "default",
       "is_fast": false

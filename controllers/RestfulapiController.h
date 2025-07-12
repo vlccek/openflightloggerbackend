@@ -8,7 +8,7 @@
 #pragma once
 
 #include <drogon/HttpController.h>
-#include "AirportsControllerBase.h"
+#include "RestfulapiControllerBase.h"
 
 # define V1_API  "/api/v1"
 
@@ -21,15 +21,15 @@ using namespace drogon_model::mydatabase;
  */
 namespace api::v1
 {
-    class AirportsController : public drogon::HttpController<AirportsController>, public AirportsControllerBase
+    class RestfulapiController : public drogon::HttpController<RestfulapiController>, public RestfulapiControllerBase
     {
     public:
         METHOD_LIST_BEGIN
-            ADD_METHOD_TO(AirportsController::getOne, V1_API"/airports/{1}", Get, Options);
-            ADD_METHOD_TO(AirportsController::updateOne, V1_API"/airports/{1}", Put, Options);
-            ADD_METHOD_TO(AirportsController::deleteOne, V1_API "/airports/{1}", Delete, Options);
-            ADD_METHOD_TO(AirportsController::get, V1_API "/airports", Get, Options);
-            ADD_METHOD_TO(AirportsController::create, V1_API"/airports", Post, Options);
+            ADD_METHOD_TO(RestfulapiController::getOne, V1_API"/airports/{1}", Get, Options);
+            ADD_METHOD_TO(RestfulapiController::updateOne, V1_API"/airports/{1}", Put, Options);
+            ADD_METHOD_TO(RestfulapiController::deleteOne, V1_API "/airports/{1}", Delete, Options);
+            ADD_METHOD_TO(RestfulapiController::get, V1_API "/airports", Get, Options);
+            ADD_METHOD_TO(RestfulapiController::create, V1_API"/airports", Post, Options);
             //ADD_METHOD_TO(AirportsController::update,"/airports",Put,Options);
         METHOD_LIST_END
 

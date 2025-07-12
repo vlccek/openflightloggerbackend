@@ -5,7 +5,7 @@
  *
  */
 
-#include "AirportsController.h"
+#include "RestfulapiController.h"
 #include <string>
 #include <drogon/orm/Mapper.h>
 #include <drogon/orm/Criteria.h>
@@ -13,30 +13,30 @@
 
 namespace api::v1
 {
-    void AirportsController::getOne(const HttpRequestPtr& req,
+    void RestfulapiController::getOne(const HttpRequestPtr& req,
                                     std::function<void(const HttpResponsePtr&)>&& callback,
                                     Airports::PrimaryKeyType&& id)
     {
-        AirportsControllerBase::getOne(req, std::move(callback), std::move(id));
+        RestfulapiController::getOne(req, std::move(callback), std::move(id));
     }
 
 
-    void AirportsController::updateOne(const HttpRequestPtr& req,
+    void RestfulapiController::updateOne(const HttpRequestPtr& req,
                                        std::function<void(const HttpResponsePtr&)>&& callback,
                                        Airports::PrimaryKeyType&& id)
     {
-        AirportsControllerBase::updateOne(req, std::move(callback), std::move(id));
+        RestfulapiController::updateOne(req, std::move(callback), std::move(id));
     }
 
 
-    void AirportsController::deleteOne(const HttpRequestPtr& req,
+    void RestfulapiController::deleteOne(const HttpRequestPtr& req,
                                        std::function<void(const HttpResponsePtr&)>&& callback,
                                        Airports::PrimaryKeyType&& id)
     {
-        AirportsControllerBase::deleteOne(req, std::move(callback), std::move(id));
+        RestfulapiController::deleteOne(req, std::move(callback), std::move(id));
     }
 
-    void AirportsController::get(const HttpRequestPtr& req,
+    void RestfulapiController::get(const HttpRequestPtr& req,
                                  std::function<void(const HttpResponsePtr&)>&& callback)
     {
         auto clientPtr = drogon::app().getDbClient();
@@ -102,9 +102,9 @@ namespace api::v1
         callback(resp);
     }
 
-    void AirportsController::create(const HttpRequestPtr& req,
+    void RestfulapiController::create(const HttpRequestPtr& req,
                                     std::function<void(const HttpResponsePtr&)>&& callback)
     {
-        AirportsControllerBase::create(req, std::move(callback));
+        RestfulapiController::create(req, std::move(callback));
     }
 }
