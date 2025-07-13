@@ -112,6 +112,76 @@ Deletes an airport.
 
 *   Status code 204 if successful.
 
+## Flights
+
+### GET /api/v1/flights
+
+Retrieves a list of flights for the authenticated user.
+
+**Request Headers:**
+
+*   `Authorization` (string, required): The JWT token, prefixed with "Bearer ".
+
+**Response:**
+
+An array of flight objects.
+
+### GET /api/v1/flights/{id}
+
+Retrieves a single flight by its ID.
+
+**Request Headers:**
+
+*   `Authorization` (string, required): The JWT token, prefixed with "Bearer ".
+
+**Response:**
+
+A flight object.
+
+### POST /api/v1/flights
+
+Creates a new flight.
+
+**Request Headers:**
+
+*   `Authorization` (string, required): The JWT token, prefixed with "Bearer ".
+
+**Request Body:**
+
+A flight object.
+
+**Response:**
+
+The created flight object.
+
+### PUT /api/v1/flights/{id}
+
+Updates an existing flight.
+
+**Request Headers:**
+
+*   `Authorization` (string, required): The JWT token, prefixed with "Bearer ".
+
+**Request Body:**
+
+A flight object.
+
+**Response:**
+
+*   Status code 200 if successful.
+
+### DELETE /api/v1/flights/{id}
+
+Deletes a flight.
+
+**Request Headers:**
+
+*   `Authorization` (string, required): The JWT token, prefixed with "Bearer ".
+
+**Response:**
+
+*   Status code 200 if successful.
+
 ## Default
 
 ### GET /

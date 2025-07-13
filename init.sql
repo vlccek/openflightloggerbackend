@@ -115,4 +115,5 @@ CREATE TABLE flights
 
     -- Timestamps for record management
     created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    edited_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

@@ -39,5 +39,6 @@ void JwtFilter::doFilter(const HttpRequestPtr &request, FilterCallback &&fcb, Fi
         request->getAttributes()->insert("jwt_" + attribute.first, attribute.second);
 
     // If everything is right, just move to other endpoint
+    request->getAttributes()->insert("user_id", std::any_cast<int64_t>(jwtAttributes["user_id"]));
     return fccb();
 }

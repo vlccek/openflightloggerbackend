@@ -60,6 +60,7 @@ class Flights
         static const std::string _flight_class;
         static const std::string _flight_reason;
         static const std::string _created_at;
+        static const std::string _edited_at;
     };
 
     static const int primaryKeyNumber;
@@ -258,8 +259,16 @@ class Flights
     ///Set the value of the column created_at
     void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
 
+    /**  For column edited_at  */
+    ///Get the value of the column edited_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfEditedAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getEditedAt() const noexcept;
+    ///Set the value of the column edited_at
+    void setEditedAt(const ::trantor::Date &pEditedAt) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 16;  }
+
+    static size_t getColumnNumber() noexcept {  return 17;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -296,6 +305,7 @@ class Flights
     std::shared_ptr<std::string> flightClass_;
     std::shared_ptr<std::string> flightReason_;
     std::shared_ptr<::trantor::Date> createdAt_;
+    std::shared_ptr<::trantor::Date> editedAt_;
     struct MetaData
     {
         const std::string colName_;
@@ -307,7 +317,7 @@ class Flights
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[16]={ false };
+    bool dirtyFlag_[17]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -403,6 +413,12 @@ class Flights
         {
             needSelection=true;
         }
+        sql += "edited_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[16])
+        {
+            needSelection=true;
+        }
         needSelection=true;
         if(parametersCount > 0)
         {
@@ -487,6 +503,15 @@ class Flights
             sql.append(placeholderStr, n);
         }
         if(dirtyFlag_[15])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[16])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

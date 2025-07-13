@@ -42,8 +42,8 @@ void Auth::getToken(const HttpRequestPtr& request, std::function<void(const Http
                           std::map<std::string, picojson::value> claims;
 
                           std::string email = user.getEmail() ? *user.getEmail() : "";
-
                           claims["email"] = picojson::value(email);
+                          claims["user_id"] = picojson::value(static_cast<int64_t>(user.getValueOfId()));
 
                           JWT jwtGenerated = JWT::generateToken(
                               claims, responseJson.isMember("remember") && responseJson["remember"].asBool());

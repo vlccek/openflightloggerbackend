@@ -29,6 +29,7 @@ const std::string Flights::Cols::_seat_type = "\"seat_type\"";
 const std::string Flights::Cols::_flight_class = "\"flight_class\"";
 const std::string Flights::Cols::_flight_reason = "\"flight_reason\"";
 const std::string Flights::Cols::_created_at = "\"created_at\"";
+const std::string Flights::Cols::_edited_at = "\"edited_at\"";
 const std::string Flights::primaryKeyName = "id";
 const bool Flights::hasPrimaryKey = true;
 const std::string Flights::tableName = "\"flights\"";
@@ -49,7 +50,8 @@ const std::vector<typename Flights::MetaData> Flights::metaData_={
 {"seat_type","std::string","USER-DEFINED",0,0,0,0},
 {"flight_class","std::string","USER-DEFINED",0,0,0,0},
 {"flight_reason","std::string","USER-DEFINED",0,0,0,0},
-{"created_at","::trantor::Date","timestamp with time zone",0,0,0,1}
+{"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
+{"edited_at","::trantor::Date","timestamp with time zone",0,0,0,1}
 };
 const std::string &Flights::getColumnName(size_t index) noexcept(false)
 {
@@ -160,11 +162,33 @@ Flights::Flights(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        if(!r["edited_at"].isNull())
+        {
+            auto timeStr = r["edited_at"].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                editedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 16 > r.size())
+        if(offset + 17 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -286,13 +310,36 @@ Flights::Flights(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        index = offset + 16;
+        if(!r[index].isNull())
+        {
+            auto timeStr = r[index].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                editedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
     }
 
 }
 
 Flights::Flights(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 16)
+    if(pMasqueradingVector.size() != 17)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -458,6 +505,32 @@ Flights::Flights(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
+    if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson[pMasqueradingVector[16]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[16]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                editedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -629,12 +702,38 @@ Flights::Flights(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+    if(pJson.isMember("edited_at"))
+    {
+        dirtyFlag_[16]=true;
+        if(!pJson["edited_at"].isNull())
+        {
+            auto timeStr = pJson["edited_at"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                editedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
 }
 
 void Flights::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 16)
+    if(pMasqueradingVector.size() != 17)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -802,6 +901,32 @@ void Flights::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+    if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson[pMasqueradingVector[16]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[16]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                editedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
 }
 
 void Flights::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -966,6 +1091,32 @@ void Flights::updateByJson(const Json::Value &pJson) noexcept(false)
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
+    if(pJson.isMember("edited_at"))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson["edited_at"].isNull())
+        {
+            auto timeStr = pJson["edited_at"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                editedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -1343,6 +1494,23 @@ void Flights::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
     dirtyFlag_[15] = true;
 }
 
+const ::trantor::Date &Flights::getValueOfEditedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(editedAt_)
+        return *editedAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Flights::getEditedAt() const noexcept
+{
+    return editedAt_;
+}
+void Flights::setEditedAt(const ::trantor::Date &pEditedAt) noexcept
+{
+    editedAt_ = std::make_shared<::trantor::Date>(pEditedAt);
+    dirtyFlag_[16] = true;
+}
+
 void Flights::updateId(const uint64_t id)
 {
 }
@@ -1364,7 +1532,8 @@ const std::vector<std::string> &Flights::insertColumns() noexcept
         "seat_type",
         "flight_class",
         "flight_reason",
-        "created_at"
+        "created_at",
+        "edited_at"
     };
     return inCols;
 }
@@ -1536,6 +1705,17 @@ void Flights::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[16])
+    {
+        if(getEditedAt())
+        {
+            binder << getValueOfEditedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> Flights::updateColumns() const
@@ -1600,6 +1780,10 @@ const std::vector<std::string> Flights::updateColumns() const
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
+    }
+    if(dirtyFlag_[16])
+    {
+        ret.push_back(getColumnName(16));
     }
     return ret;
 }
@@ -1771,6 +1955,17 @@ void Flights::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[16])
+    {
+        if(getEditedAt())
+        {
+            binder << getValueOfEditedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value Flights::toJson() const
 {
@@ -1903,6 +2098,14 @@ Json::Value Flights::toJson() const
     {
         ret["created_at"]=Json::Value();
     }
+    if(getEditedAt())
+    {
+        ret["edited_at"]=getEditedAt()->toDbStringLocal();
+    }
+    else
+    {
+        ret["edited_at"]=Json::Value();
+    }
     return ret;
 }
 
@@ -1910,7 +2113,7 @@ Json::Value Flights::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 16)
+    if(pMasqueradingVector.size() == 17)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2088,6 +2291,17 @@ Json::Value Flights::toMasqueradedJson(
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[16].empty())
+        {
+            if(getEditedAt())
+            {
+                ret[pMasqueradingVector[16]]=getEditedAt()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[16]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -2219,6 +2433,14 @@ Json::Value Flights::toMasqueradedJson(
     {
         ret["created_at"]=Json::Value();
     }
+    if(getEditedAt())
+    {
+        ret["edited_at"]=getEditedAt()->toDbStringLocal();
+    }
+    else
+    {
+        ret["edited_at"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2324,13 +2546,18 @@ bool Flights::validateJsonForCreation(const Json::Value &pJson, std::string &err
         if(!validJsonOfField(15, "created_at", pJson["created_at"], err, true))
             return false;
     }
+    if(pJson.isMember("edited_at"))
+    {
+        if(!validJsonOfField(16, "edited_at", pJson["edited_at"], err, true))
+            return false;
+    }
     return true;
 }
 bool Flights::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 16)
+    if(pMasqueradingVector.size() != 17)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2484,6 +2711,14 @@ bool Flights::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
+      if(!pMasqueradingVector[16].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[16]))
+          {
+              if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -2579,13 +2814,18 @@ bool Flights::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(15, "created_at", pJson["created_at"], err, false))
             return false;
     }
+    if(pJson.isMember("edited_at"))
+    {
+        if(!validJsonOfField(16, "edited_at", pJson["edited_at"], err, false))
+            return false;
+    }
     return true;
 }
 bool Flights::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 16)
+    if(pMasqueradingVector.size() != 17)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2674,6 +2914,11 @@ bool Flights::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
+      {
+          if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
               return false;
       }
     }
@@ -2900,6 +3145,18 @@ bool Flights::validJsonOfField(size_t index,
             }
             break;
         case 15:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 16:
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
