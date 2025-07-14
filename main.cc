@@ -30,6 +30,7 @@ void printControllerRoutes()
 void printAppSettings()
 {
     auto& app = drogon::app();
+    using drogon::HttpRequestPtr;;
 
 
     std::ostringstream ss;
@@ -62,6 +63,33 @@ int main()
     // drogon::app().addListener("0.0.0.0", 5555);
     //Load config file
     drogon::app().loadConfigFile("../config.json");
+    using namespace drogon;
+
+# if 0
+    app().registerPreRoutingAdvice([](const HttpRequestPtr& req,
+                                      FilterCallback&& fcb,
+                                      FilterChainCallback&& fccb)
+    {
+        auto res = drogon::HttpResponse::newHttpResponse();
+        res->addHeader("Access-Control-Allow-Origin", "*");
+
+        res->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        res->addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res->addHeader("Access-Control-Allow-Credentials", "true");
+
+
+        if (req->method() == drogon::HttpMethod::Options)
+        {
+            res->setStatusCode(drogon::k204NoContent);
+            fcb(res);
+            return;
+        }
+
+        fccb();
+    });
+#endif
+    drogon::app().setLogLevel(trantor::Logger::kInfo); // Set log level to Info
+
 
     drogon::app().registerBeginningAdvice([]()
     {
@@ -72,5 +100,7 @@ int main()
     //drogon::app().loadConfigFile("../config.yaml");
     //Run HTTP framework,the method will block in the internal event loop
     drogon::app().run();
+
+
     return 0;
 }

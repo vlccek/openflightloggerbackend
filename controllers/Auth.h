@@ -10,6 +10,8 @@
 #include "Airlines.h"
 #include "Users.h"
 #include "utils/crypto.h"
+#include <drogon/HttpController.h>
+#include <drogon/orm/DbClient.h>
 
 
 using namespace drogon;
@@ -21,13 +23,18 @@ namespace api::v1
     {
     public:
         METHOD_LIST_BEGIN
-            METHOD_ADD(Auth::getToken, "/login", Post, Options);
-            METHOD_ADD(Auth::verifyToken, "/verify", Get, Options, "api::v1::filters::JwtFilter");
-            METHOD_ADD(Auth::registerUser, "/register", Post, Options);
+            ADD_METHOD_TO(Auth::login, "/api/v1/auth/login", Post, Options,
+                          "CorsMiddleware");
+            ADD_METHOD_TO(Auth::verifyToken, "/api/v1/auth/refresh", Post, Options,
+                          "CorsMiddleware", "api::v1::filters::JwtFilter");
+            ADD_METHOD_TO(Auth::registerUser, "/api/v1/auth/register", Post,
+                          Options, "CorsMiddleware");
         METHOD_LIST_END
 
-        void getToken(const HttpRequestPtr& request, std::function<void(const HttpResponsePtr&)>&& callback);
-        void verifyToken(const HttpRequestPtr& request, std::function<void(const HttpResponsePtr&)>&& callback);
-        void registerUser(const HttpRequestPtr& request, std::function<void(const HttpResponsePtr&)>&& callback);
+
+        Task<> login(HttpRequestPtr req,
+                     std::function<void(const HttpResponsePtr&)> callback);
+        Task<> verifyToken(HttpRequestPtr request, std::function<void(const HttpResponsePtr&)> callback);
+        Task<> registerUser(HttpRequestPtr request, std::function<void(const HttpResponsePtr&)> callback);
     };
 }
