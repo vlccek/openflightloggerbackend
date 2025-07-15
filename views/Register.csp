@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <%c++ if(!@@.get<std::string>("error").empty()) { %>
+        <p style="color:red;"><%c++ $$ << @@.get<std::string>("error"); %></p>
+    <%c++ } %>
+    <form action="/gui/register" method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+        <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="/gui/login">Login here</a>.</p>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Account Details</title>
+</head>
+<body>
+    <h1>Account Details</h1>
+    <%inc#include "models/Users.h"%>
+    <%c++ auto user = @@.get<drogon_model::mydatabase::Users>("user"); %>
+    <p><strong>Username:</strong> <%c++ $$ << *user.getUsername(); %></p>
+    <p><strong>Email:</strong> <%c++ $$ << *user.getEmail(); %></p>
+</body>
+</html>

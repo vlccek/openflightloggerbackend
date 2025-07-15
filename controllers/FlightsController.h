@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <drogon/HttpController.h>
@@ -15,17 +14,29 @@ namespace api::v1
     {
     public:
         METHOD_LIST_BEGIN
-            METHOD_ADD(FlightsController::getOne, "/{1}", Get, Options, "api::v1::filters::JwtFilter");
-            METHOD_ADD(FlightsController::getAll, "", Get, Options, "api::v1::filters::JwtFilter");
-            METHOD_ADD(FlightsController::create, "", Post, Options, "api::v1::filters::JwtFilter");
-            METHOD_ADD(FlightsController::updateOne, "/{1}", Put, Options, "api::v1::filters::JwtFilter");
-            METHOD_ADD(FlightsController::deleteOne, "/{1}", Delete, Options, "api::v1::filters::JwtFilter");
+            ADD_METHOD_TO(FlightsController::getOne, "/api/v1/myflights/{1}", Get, Options,
+                          "api::v1::filters::JwtFilter",
+                          "CorsMiddleware");
+            ADD_METHOD_TO(FlightsController::getAll, "/api/v1/myflights", Get, Options, "api::v1::filters::JwtFilter",
+                          "CorsMiddleware");
+            ADD_METHOD_TO(FlightsController::create, "/api/v1/myflights", Post, Options, "api::v1::filters::JwtFilter",
+                          "CorsMiddleware");
+            ADD_METHOD_TO(FlightsController::updateOne, "/api/v1/myflights/{1}", Put, Options,
+                          "api::v1::filters::JwtFilter",
+                          "CorsMiddleware");
+            ADD_METHOD_TO(FlightsController::deleteOne, "/api/v1/myflights/{1}", Delete, Options,
+                          "api::v1::filters::JwtFilter",
+                          "CorsMiddleware");
+            ADD_METHOD_TO(FlightsController::getLatestEditedDate, "/api/v1/myflights/latestEditedDate", Get, Options,
+                          "api::v1::filters::JwtFilter",
+                          "CorsMiddleware");
         METHOD_LIST_END
 
-        void getOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, Flights::PrimaryKeyType &&id);
-        void getAll(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-        void create(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback);
-        void updateOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, Flights::PrimaryKeyType &&id);
-        void deleteOne(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback, Flights::PrimaryKeyType &&id);
+        Task<HttpResponsePtr> getOne(HttpRequestPtr req, Flights::PrimaryKeyType id);
+        Task<HttpResponsePtr> getAll(HttpRequestPtr req);
+        Task<HttpResponsePtr> create(HttpRequestPtr req);
+        Task<HttpResponsePtr> updateOne(HttpRequestPtr req, Flights::PrimaryKeyType id);
+        Task<HttpResponsePtr> deleteOne(HttpRequestPtr req, Flights::PrimaryKeyType id);
+        Task<HttpResponsePtr> getLatestEditedDate(HttpRequestPtr req);
     };
 }
