@@ -80,6 +80,7 @@ Task<> Auth::verifyToken(const HttpRequestPtr request, std::function<void(const 
     resultJson["iss"] = request->getAttributes()->get<std::string>("jwt_iss");
     resultJson["nbf"] = request->getAttributes()->get<std::int64_t>("jwt_nbf");
     resultJson["email"] = request->getAttributes()->get<std::string>("jwt_email");
+    resultJson["user_id"] = request->getAttributes()->get<int64_t>("jwt_user_id");
     resultJson["jwt_debugger"] = "https://jwt.io/#debugger-io?token=" + request->getHeader("Authorization").substr(7);
     resultJson["status"] = 1;
 

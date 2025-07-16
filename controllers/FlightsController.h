@@ -34,9 +34,10 @@ namespace api::v1
 
         Task<HttpResponsePtr> getOne(HttpRequestPtr req, Flights::PrimaryKeyType id);
         Task<HttpResponsePtr> getAll(HttpRequestPtr req);
-        Task<HttpResponsePtr> create(HttpRequestPtr req);
         Task<HttpResponsePtr> updateOne(HttpRequestPtr req, Flights::PrimaryKeyType id);
         Task<HttpResponsePtr> deleteOne(HttpRequestPtr req, Flights::PrimaryKeyType id);
         Task<HttpResponsePtr> getLatestEditedDate(HttpRequestPtr req);
+
+        void create(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback);
     };
 }

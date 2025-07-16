@@ -88,7 +88,8 @@ int main()
         fccb();
     });
 #endif
-    drogon::app().setLogLevel(trantor::Logger::kInfo); // Set log level to Info
+    //drogon::app().setLogLevel(trantor::Logger::kTrace); // Set log level to Info
+    drogon::app().setLogLevel(trantor::Logger::kDebug); // Set log level to Info
 
 
     drogon::app().registerBeginningAdvice([]()

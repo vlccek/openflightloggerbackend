@@ -26,7 +26,7 @@
 |----------|--------|---------|--------------|------------------|----------|
 | `/api/v1/myflights` | GET | `Authorization: Bearer {token}` (required) | - | `?lastEdited={timestamp}` (optional) | `[{"id": 0, "user_id": 0, "flight_number": "", "flight_reason": "", "edited_at": ""}]` |
 | `/api/v1/myflights/{id}` | GET | `Authorization: Bearer {token}` (required) | - | - | `{"id": 0, "user_id": 0, "flight_number": "", "flight_reason": "", "edited_at": ""}` |
-| `/api/v1/myflights` | POST | `Authorization: Bearer {token}` (required) | `{"flight_number": "", "flight_reason": ""}` | - | `{"id": 0, "user_id": 0, "flight_number": "", "flight_reason": "", "edited_at": ""}` |
+| `/api/v1/myflights` | POST | `Authorization: Bearer {token}` (required) | `{"departure_airport_id": 0, "arrival_airport_id": 0, "flight_date": "YYYY-MM-DDTHH:MM:SSZ", "flight_duration": "", "distance": 0, "route_path": [], "flight_number": "", "airplane_type": "", "airplane_registration": "", "seat": "", "seat_type": "", "flight_class": "", "flight_reason": ""}` | - | `{"id": 0, "user_id": 0, "flight_number": "", "flight_reason": "", "edited_at": ""}` |
 | `/api/v1/myflights/{id}` | PUT | `Authorization: Bearer {token}` (required) | `{"flight_number": "", "flight_reason": ""}` | - | `{"message": "Updated successfully"}` |
 | `/api/v1/myflights/{id}` | DELETE | `Authorization: Bearer {token}` (required) | - | - | `{"message": "Deleted successfully"}` |
 | `/api/v1/myflights/latestEditedDate` | GET | `Authorization: Bearer {token}` (required) | - | - | `{"latestEditedDate": "YYYY-MM-DDTHH:MM:SSZ"}` |

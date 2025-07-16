@@ -16,6 +16,7 @@ int main(int argc, char** argv)
 
     // Start the main loop on another thread
     std::thread thr([&]() {
+        app().loadConfigFile("../../config.json");
         // Queues the promise to be fulfilled after starting the loop
         app().getLoop()->queueInLoop([&p1]() { p1.set_value(); });
         app().run();
