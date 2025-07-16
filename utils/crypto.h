@@ -13,8 +13,8 @@ inline std::string getHash(const std::string& password)
     if (crypto_pwhash_str(
         hashed,
         password.c_str(), password.size(),
-        crypto_pwhash_OPSLIMIT_MODERATE,
-        crypto_pwhash_MEMLIMIT_MODERATE) != 0)
+        crypto_pwhash_OPSLIMIT_INTERACTIVE,
+        crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0)
     {
         throw std::runtime_error("Out of memory while hashing password.");
     }
