@@ -90,9 +90,9 @@ what();
     }
 }
 
-void FlightsController::create(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)> &&callback)
+void FlightsController::create(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback)
 {
-    auto user_id = req->getAttributes()->get<int>("user_id");
+    auto user_id = req->getAttributes()->get<int64_t>("jwt_user_id");
     auto jsonPtr = req->getJsonObject();
 
     LOG_DEBUG << "Attempting to create flight for user_id: " << user_id;
@@ -115,24 +115,29 @@ void FlightsController::create(const HttpRequestPtr& req, std::function<void(con
 
         drogon::orm::Mapper<Flights> mapper(drogon::app().getDbClient());
         mapper.insert(flight,
-            [callback, user_id](const Flights& newFlight) {
-                LOG_DEBUG << "Flight created successfully with ID: " << newFlight.getValueOfId() << " for user_id: " << user_id;
-                auto resp = HttpResponse::newHttpJsonResponse(newFlight.toJson());
-                resp->setStatusCode(k201Created);
-                callback(resp);
-            },
-            [callback, user_id, req](const drogon::orm::DrogonDbException& e) {
-                LOG_ERROR << "Database error while creating flight for user_id: " << user_id << ". Error: " << e.base().what() << ". Request body: " << req->body();
-                Json::Value ret;
-                ret["error"] = e.base().what();
-                auto resp = HttpResponse::newHttpJsonResponse(ret);
-                resp->setStatusCode(k500InternalServerError);
-                callback(resp);
-            });
+                      [callback, user_id](const Flights& newFlight)
+                      {
+                          LOG_DEBUG << "Flight created successfully with ID: " << newFlight.getValueOfId() <<
+ " for user_id: " << user_id;
+                          auto resp = HttpResponse::newHttpJsonResponse(newFlight.toJson());
+                          resp->setStatusCode(k200OK);
+                          callback(resp);
+                      },
+                      [callback, user_id, req](const drogon::orm::DrogonDbException& e)
+                      {
+                          LOG_ERROR << "Database error while creating flight for user_id: " << user_id << ". Error: " <<
+                              e.base().what() << ". Request body: " << req->body();
+                          Json::Value ret;
+                          ret["error"] = e.base().what();
+                          auto resp = HttpResponse::newHttpJsonResponse(ret);
+                          resp->setStatusCode(k500InternalServerError);
+                          callback(resp);
+                      });
     }
     catch (const Json::Exception& e)
     {
-        LOG_INFO << "Failed to create flight for user_id: " << user_id << ". JSON parsing error: " << e.what() << ". Request body: " << req->body();
+        LOG_INFO << "Failed to create flight for user_id: " << user_id << ". JSON parsing error: " << e.what() <<
+ ". Request body: " << req->body();
         Json::Value ret;
         ret["error"] = "Field type error: " + std::string(e.what());
         auto resp = HttpResponse::newHttpJsonResponse(ret);
@@ -143,51 +148,29 @@ void FlightsController::create(const HttpRequestPtr& req, std::function<void(con
 
 Task<HttpResponsePtr> FlightsController::updateOne(HttpRequestPtr req, Flights::PrimaryKeyType id)
 {
-    LOG_DEBUG << "Attempting to update flight with ID: " << id << " for user_id: " << req->getAttributes()->get<
-        int>("user_id");
-    auto user_id = req->getAttributes()->get<int>("user_id");
+    auto user_id = req->getAttributes()->get<int64_t>("jwt_user_id");
+
     auto dbClientPtr = drogon::app().getDbClient();
+    auto jsonPtr = req->getJsonObject();
+
+
+    Flights flightUpdate(*jsonPtr);
+    flightUpdate.setId(id);
+    flightUpdate.setUserId(user_id);
+    flightUpdate.setEditedAt(trantor::Date::now());
+
+
+    drogon::orm::Mapper<Flights> mapper(dbClientPtr);
 
     try
     {
-        auto existingFlightResult = co_await dbClientPtr->execSqlCoro(
-            "SELECT * FROM flights WHERE id = $1 AND user_id = $2", id, user_id);
-        if (existingFlightResult.empty())
-        {
-            LOG_INFO << "Flight with ID: " << id << " not found or forbidden for user_id: " << user_id;
-            Json::Value ret;
-            ret["error"] = "Flight not found or forbidden";
-            auto resp = HttpResponse::newHttpJsonResponse(ret);
-            resp->setStatusCode(k404NotFound);
-            co_return resp;
-        }
-
-        auto jsonPtr = req->getJsonObject();
-        if (!jsonPtr)
-        {
-            LOG_INFO << "Failed to update flight with ID: " << id << " for user_id: " << user_id <<
- ". No JSON object found in request.";
-            Json::Value ret;
-            ret["error"] = "No json object is found in the request";
-            auto resp = HttpResponse::newHttpJsonResponse(ret);
-            resp->setStatusCode(k400BadRequest);
-            co_return resp;
-        }
-
-        Flights flightUpdate(*jsonPtr);
-        flightUpdate.setId(id);
-        flightUpdate.setUserId(user_id);
-        flightUpdate.setEditedAt(trantor::Date::now());
-
-        // Assuming 'flight_number' and 'flight_reason' are not optional and always present in the JSON
-        co_await dbClientPtr->execSqlCoro(
-            "UPDATE flights SET flight_number = $1, flight_reason = $2, edited_at = $3 WHERE id = $4 AND user_id = $5",
-            flightUpdate.getValueOfFlightNumber(), flightUpdate.getValueOfFlightReason(),
-            flightUpdate.getValueOfEditedAt(), id, user_id);
+        auto update = mapper.updateFuture(flightUpdate);
+        auto update_values = update.get();
 
         Json::Value ret;
-        ret["message"] = "Updated successfully";
-        LOG_DEBUG << "Flight with ID: " << id << " updated successfully for user_id: " << user_id;
+        ret.append(Flights(flightUpdate).toJson());
+        LOG_DEBUG << "Flight with ID: " << id << " updated successfully for user_id: " << user_id << "Update values" <<
+ update_values;
         auto resp = HttpResponse::newHttpJsonResponse(ret);
         co_return resp;
     }
