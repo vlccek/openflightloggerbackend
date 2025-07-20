@@ -111,7 +111,8 @@ void FlightsController::create(const HttpRequestPtr& req, std::function<void(con
     {
         Flights flight(*jsonPtr); // This will throw Json::Exception if required fields are missing
         flight.setUserId(user_id);
-        flight.setEditedAt(trantor::Date::now()); // Set edited_at on creation
+        // flight.setEditedAt(trantor::Date::now()); // Set edited_at on creation
+
 
         drogon::orm::Mapper<Flights> mapper(drogon::app().getDbClient());
         mapper.insert(flight,

@@ -83,7 +83,7 @@ Flights::Flights(const Row &r, const ssize_t indexOffset) noexcept
             auto timeStr = r["flight_date"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%dT%H:%M:%SZ",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
             if(p)
@@ -578,7 +578,7 @@ Flights::Flights(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["flight_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%dT%H:%M:%SZ",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
             if(p)
@@ -684,7 +684,7 @@ Flights::Flights(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%dT%H:%M:%SZ",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
             if(p)
@@ -2004,7 +2004,7 @@ Json::Value Flights::toJson() const
     }
     if(getFlightDate())
     {
-        ret["flight_date"]=getFlightDate()->toDbStringLocal();
+        ret["flight_date"]=getFlightDate()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
     }
     else
     {
@@ -2092,7 +2092,7 @@ Json::Value Flights::toJson() const
     }
     if(getCreatedAt())
     {
-        ret["created_at"]=getCreatedAt()->toDbStringLocal();
+        ret["created_at"]=getCreatedAt()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
     }
     else
     {
@@ -2100,7 +2100,7 @@ Json::Value Flights::toJson() const
     }
     if(getEditedAt())
     {
-        ret["edited_at"]=getEditedAt()->toDbStringLocal();
+        ret["edited_at"]=getEditedAt()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
     }
     else
     {
@@ -2163,7 +2163,7 @@ Json::Value Flights::toMasqueradedJson(
         {
             if(getFlightDate())
             {
-                ret[pMasqueradingVector[4]]=getFlightDate()->toDbStringLocal();
+                ret[pMasqueradingVector[4]]=getFlightDate()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
             }
             else
             {
@@ -2284,7 +2284,7 @@ Json::Value Flights::toMasqueradedJson(
         {
             if(getCreatedAt())
             {
-                ret[pMasqueradingVector[15]]=getCreatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[15]]=getCreatedAt()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
             }
             else
             {
@@ -2295,7 +2295,7 @@ Json::Value Flights::toMasqueradedJson(
         {
             if(getEditedAt())
             {
-                ret[pMasqueradingVector[16]]=getEditedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[16]]=getEditedAt()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
             }
             else
             {
@@ -2339,7 +2339,7 @@ Json::Value Flights::toMasqueradedJson(
     }
     if(getFlightDate())
     {
-        ret["flight_date"]=getFlightDate()->toDbStringLocal();
+        ret["flight_date"]=getFlightDate()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
     }
     else
     {
@@ -2427,7 +2427,7 @@ Json::Value Flights::toMasqueradedJson(
     }
     if(getCreatedAt())
     {
-        ret["created_at"]=getCreatedAt()->toDbStringLocal();
+        ret["created_at"]=getCreatedAt()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
     }
     else
     {
@@ -2435,7 +2435,7 @@ Json::Value Flights::toMasqueradedJson(
     }
     if(getEditedAt())
     {
-        ret["edited_at"]=getEditedAt()->toDbStringLocal();
+        ret["edited_at"]=getEditedAt()->toCustomFormattedString("%Y-%m-%dT%H:%M:%SZ");
     }
     else
     {
